@@ -19,16 +19,24 @@
             "extensions": [
                 // ruff: pythonのlinter + formatter
                 "charliermarsh.ruff",
-                // 基本
+                // documentation
+                "njpwerner.autodocstring",
+                // git関連
                 "mhutchie.git-graph",
                 "eamodio.gitlens",
+                // htmlタグの自動補完
                 "formulahendry.auto-rename-tag",
+                // htmlタグの自動クローズ
                 "formulahendry.auto-close-tag",
+                // copilot関連
                 "github.copilot",
                 "github.copilot-chat",
                 "github.copilot-labs",
+                // エラー内容をエディタ上に表示
                 "usernamehw.errorlens",
+                // 行末のスペースを可視化
                 "shardulm94.trailing-spaces",
+                // インデントに色を付ける
                 "oderwat.indent-rainbow",
                 "christian-kohler.path-intellisense",
                 "VisualStudioExptTeam.vscodeintellicode",
