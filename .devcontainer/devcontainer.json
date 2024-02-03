@@ -8,12 +8,17 @@
         "context": ".."
     },
     "features": {
+        // ruff: pythonのlinter + formatter
+        "ghcr.io/devcontainers-contrib/features/ruff:1": {},
+        // git, github-cli
         "ghcr.io/devcontainers/features/git:1": {},
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
     "customizations": {
         "vscode": {
             "extensions": [
+                // ruff: pythonのlinter + formatter
+                "charliermarsh.ruff",
                 // 基本
                 "mhutchie.git-graph",
                 "eamodio.gitlens",
