@@ -1,5 +1,5 @@
 {
-    "name": "python-devcontainer",
+    "name": "fastapi-learning",
     "containerEnv": {
         "TZ": "Asia/Tokyo"
     },
