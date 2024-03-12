@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from pydantic import BaseModel
 from enum import Enum
-from typing import Optional
+from typing import Optional, List, Union
 
 app = FastAPI()
 
@@ -61,13 +61,26 @@ fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"
 
 
 @app.get("/items/")
-async def read_item(skip: int = 0, limit: int = 10):
+async def read_item(
+    q: Union[List[str], None] = Query(default=["foo", "bar"], title="List[str] query"),
+    q2: list = Query(
+        default=[], description="list query", alias="another-q", deprecated=True
+    ),
+    skip: int = Query(ge=1),
+    limit: int = 10,
+):
+    print(q)
     return fake_items_db[skip : skip + limit]
 
 
 @app.get("/users/{user_id}/items/{item_id}")
 def read_user_item(
-    user_id: int, item_id: str, q: Optional[str] = None, short: bool = False
+    user_id: int,
+    item_id: str,
+    q: Optional[str] = Query(
+        default=None, min_length=3, max_length=10, pattern="^ID\d+!$"
+    ),
+    short: bool = False,
 ):
     item = {"item_id": item_id, "owner_id": user_id}
     if q:
