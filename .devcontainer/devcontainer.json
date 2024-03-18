@@ -1,5 +1,5 @@
 {
-    "name": "fastapi-learning",
+    "name": "simple-crud-app",
     "containerEnv": {
         "TZ": "Asia/Tokyo"
     },
@@ -8,6 +8,10 @@
         "context": ".."
     },
     "features": {
+        // terraform
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        // GCP CLI
+        "ghcr.io/dhoeric/features/google-cloud-cli:1": {},
         // ruff: pythonのlinter + formatter
         "ghcr.io/devcontainers-contrib/features/ruff:1": {},
         // git, github-cli
@@ -17,6 +21,10 @@
     "customizations": {
         "vscode": {
             "extensions": [
+                // terraform
+                "hashicorp.terraform",
+                // GCP CLI
+                "googlecloudtools.cloudcode",
                 // ruff: pythonのlinter + formatter
                 "charliermarsh.ruff",
                 // documentation
