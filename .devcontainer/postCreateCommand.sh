@@ -7,7 +7,3 @@ cp .devcontainer/.ssh/* ~/.ssh/
 
 ## python関連パッケージのインストール
 pip install -r requirements.txt
-
-## GCPサービスアカウントキーを環境変数に設定する
-export GOOGLE_APPLICATION_CREDENTIALS=".devcontainer/gcp-service-account-key.json"
-
