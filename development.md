@@ -28,3 +28,13 @@ provider "google" {
   - 権限が不足していると`terraform apply`時にエラーが発生する
 - サービスアカウントやロールの設定はGCPコンソールのIAMから行う
 
+## Firebase SDKでFirestoreデータベースにデータを挿入する
+- Firestoreデータベース名を **`(default)`** にする必要がある点に注意 :warning:
+  - Firebase SDKはGCPプロジェクトに紐付くデフォルトのFirestoreデータベースを対象とする
+  - つまり、デフォルト名である`(default)`と名付けられたFirestoreデータベースを参照する
+  - TerraformのHCLでFirestoreリソースを定義する際、`name`属性を必須で要求されるが、ここを`(default)`にしておかないといけない
+  - Firebase SDKでFirestoreデータベース名を明示的に指定することはできない
+  - Firebase SDKはサービスアカウントのキーからGCPプロジェクトIDを特定し、アカウントに付与された権限を使って`(default)`データベースにアクセスする
+- [insert_firestore.py](./src/insert_firestore.py)のコードで認証し、Firestoreデータベースにデータを挿入できた
+
+![alt text](./images/firebase-sdk-insert.png)
