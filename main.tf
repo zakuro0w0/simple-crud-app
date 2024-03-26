@@ -19,37 +19,20 @@ variable "region" {
   default = "us-central1"
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
-}
-
 resource "google_project_service" "firestore" {
   service            = "firestore.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_firestore_database" "default" {
-  name        = "simple-crud-app-database"
+  # firestoreリソースはGCPプロジェクトに1個だけにする
+  # 複数作成できるがFirebaseSDKで参照できるのは1個だけ
+  # firestoreデータベース名が"(default)"でなければならない
+  # FirebaseSDKでデータベース名は指定できない
+  name        = "(default)"
   provider    = google
   project     = var.project_id
   location_id = "asia-northeast1"
   type        = "FIRESTORE_NATIVE"
 }
 
-# resource "google_cloud_run_service" "default" {
-#   name     = "crud-service"
-#   location = var.region
-
-#   template {
-#     spec {
-#       containers {
-#         image = "gcr.io/${var.project_id}/crud-service:latest"
-#       }
-#     }
-#   }
-
-#   traffic {
-#     percent         = 100
-#     latest_revision = true
-#   }
-# }
