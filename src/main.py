@@ -3,10 +3,16 @@ from pydantic import BaseModel
 from typing import Union, Optional
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
 
 app = FastAPI()
 
-cred = credentials.Certificate("../.devcontainer/gcp-service-account-key.json")
+# プロジェクトのrootディレクトリからservice-account-key.jsonのpathを構築する
+current_dir = os.path.dirname(os.path.realpath(__file__))
+cred_path = os.path.join(current_dir, "../.devcontainer/gcp-service-account-key.json")
+
+# 認証情報からfirestoreデータベースインスタンスを作る
+cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
