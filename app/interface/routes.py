@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from .models import TaskCreateIn
-from ..application.task_service import TaskService
-from ..domain.task import Task
-from ..infrastructure.task_repository import TaskRepository
+from application import TaskService
+from domain import Task
+from infrastructure import TaskRepository
 
 router = APIRouter()
 

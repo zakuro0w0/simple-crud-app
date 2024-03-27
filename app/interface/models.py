@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import NewType
-from ..domain.task import Task
+from domain import Task
 
 
 class TaskCreateIn(BaseModel):

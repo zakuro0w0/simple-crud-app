@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
-from ..domain.task import Task
+from domain import Task
 
 # プロジェクトのrootディレクトリからservice-account-key.jsonのpathを構築する
 current_dir = os.path.dirname(os.path.realpath(__file__))

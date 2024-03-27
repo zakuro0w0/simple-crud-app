@@ -1,5 +1,11 @@
 from fastapi import FastAPI
-from .interface.routes import router as tasks_router
+import sys
+from pathlib import Path
+
+# app/をpythonモジュール検索パスに追加し、app/からの相対パスでimportできるようにする
+sys.path.append(str(Path(__file__).parent))
+
+from interface import router as tasks_router
 
 app = FastAPI()
 

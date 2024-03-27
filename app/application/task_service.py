@@ -1,5 +1,5 @@
-from ..domain.task import Task
-from ..infrastructure.task_repository import TaskRepository
+from infrastructure import TaskRepository
+from domain import Task
 
 
 class TaskService:
