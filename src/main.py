@@ -18,7 +18,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-class TaskIn(BaseModel):
+class TaskCreateIn(BaseModel):
     """
     タスクの入力モデルを表します。
 
@@ -33,7 +33,7 @@ class TaskIn(BaseModel):
     completed: Optional[bool] = False
 
 
-class TaskOut(TaskIn):
+class TaskCreateOut(TaskCreateIn):
     """
     タスクの出力モデルを表します。
 
@@ -44,7 +44,7 @@ class TaskOut(TaskIn):
 
 
 @app.post("/tasks/")
-async def create_task(task: TaskIn):
+async def create_task(task: TaskCreateIn):
     """
     データベースに新しいタスクを作成します。
 
@@ -54,6 +54,6 @@ async def create_task(task: TaskIn):
     Returns:
         dict: 作成されたタスクのIDとタスク自体を含む辞書。
     """
-    task_out = TaskOut(**task.model_dump())
+    task_out = TaskCreateOut(**task.model_dump())
     doc_ref = db.collection("tasks").add(task_out.model_dump())
     return {"id": doc_ref[1].id, "task": task_out}
