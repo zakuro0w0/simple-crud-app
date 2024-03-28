@@ -1,17 +1,16 @@
 from fastapi import APIRouter
 from .models import TaskCreateIn
-from application import TaskService
+from .controller import TaskController
 from domain import Task
-from infrastructure import TaskRepository
 
 router = APIRouter()
+controller = TaskController()
 
 
 @router.post("/")
 async def create_task(task: TaskCreateIn):
-    service = TaskService(repository=TaskRepository())
     # TaskCreateInをTaskに変換してから渡す
-    created_task = service.create_task(
+    created_task = controller.create_task(
         Task(title=task.title, description=task.description)
     )
     return created_task
