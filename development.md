@@ -122,3 +122,40 @@ class TaskCreateIn(BaseModel):
 - webAPIの設計によっては`requied`なデータと`optional`なデータに分かれるため、そこでもドメインモデルと一致しない場合が出てくる
 - 無理に共通化するべきではなく、ドメインモデルとwebAPIの入出力モデルは別々に定義するべき
   - このトレードオフとして、ドメインモデル変更時にwebAPIの入出力モデルも変更する必要がある
+
+## pythonのモジュール検索パスについて
+
+```py
+app/
+├── domain/
+│   └── task.py
+├── interface/
+│   └── routes.py
+```
+
+- 上記のような位置関係にある場合、routes.pyがtask.pyの`Task`をimportするには以下のように記述する
+
+### app/interface/routes.py
+```py
+from ..domain import Task
+```
+
+- これはlinuxの相対ファイルパスと同じで`app/interface/`から見て1つ上の階層(app/)にあるdomainモジュールをimportするという意味になる
+- あまりファイル間の位置関係を意識したimportは書きたくないので、ルートディレクトリからの相対パスでimportを統一したい
+- pythonにはモジュール検索pathが設定されており`sys.path`でアクセスできる
+
+### app/main.py
+```py
+import sys
+from pathlib import Path
+
+# app/をpythonモジュール検索パスに追加し、app/からの相対パスでimportできるようにする
+sys.path.append(str(Path(__file__).parent))
+```
+
+- プログラム開始時にプロジェクトのルートディレクトリをモジュール検索pathに追加することで、以下のようにルートからの相対パスによるimportが可能となる
+
+### app/interface/routes.py
+```py
+from domain import Task
+```
