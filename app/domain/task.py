@@ -3,6 +3,17 @@ from datetime import datetime
 
 
 class Task(BaseModel):
+    """
+    タスクモデル。
+
+    属性:
+    title: str - タスクのタイトル。
+    description: str - タスクの説明。
+    completed: bool - タスクの完了状態。デフォルトはFalse。
+    created_at: datetime - タスクの作成時刻。デフォルトは現在時刻。
+    updated_at: datetime - タスクの最終更新時刻。デフォルトは現在時刻。
+    """
+
     title: str
     description: str
     completed: bool = False
