@@ -1,19 +1,14 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
+from google.cloud import firestore
+from dotenv import load_dotenv, find_dotenv
 import os
 from domain import Task
 from application import ITaskRepository
 
-# プロジェクトのrootディレクトリからservice-account-key.jsonのpathを構築する
-current_dir = os.path.dirname(os.path.realpath(__file__))
-cred_path = os.path.join(
-    current_dir, "../../.devcontainer/gcp-service-account-key.json"
-)
-
-# 認証情報からfirestoreデータベースインスタンスを作る
-cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# .envファイルが存在する場合にのみそれを読み込む
+load_dotenv(find_dotenv())
+# 環境変数からプロジェクトIDを取得
+project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+db = firestore.Client(project=project_id)
 
 
 class TaskRepositoryFirestore(ITaskRepository):

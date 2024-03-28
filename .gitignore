@@ -4,6 +4,9 @@ __pycache__/
 # gcpの認証情報は除外するべき
 gcp-service-account-key.json
 
+# ローカルで実行する際の認証情報を書いた環境変数は除外するべき
+.env
+
 # terraform環境変数は除外するべき
 *.tfvars
 
