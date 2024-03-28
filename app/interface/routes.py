@@ -14,4 +14,4 @@ async def create_task(task: TaskCreateIn):
     created_task = service.create_task(
         Task(title=task.title, description=task.description)
     )
-    return {"task": created_task}
+    return created_task

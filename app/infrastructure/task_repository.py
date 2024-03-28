@@ -18,6 +18,5 @@ db = firestore.client()
 class TaskRepository:
     def add(self, task: Task) -> Task:
         update_time, doc_ref = db.collection("tasks").add(task.model_dump())
-        task.id = doc_ref.id
         task.updated_at = update_time
-        return task
+        return {"id": doc_ref.id, "task": task}
