@@ -1,6 +1,6 @@
 from application import TaskService
 from domain import Task
-from infrastructure import TaskRepository
+from infrastructure import TaskRepositoryFirestore
 
 
 class TaskController:
@@ -9,7 +9,7 @@ class TaskController:
     """
 
     def __init__(self):
-        self.service = TaskService(repository=TaskRepository())
+        self.service = TaskService(repository=TaskRepositoryFirestore())
 
     def create_task(self, task: Task):
         """
