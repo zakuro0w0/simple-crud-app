@@ -36,3 +36,25 @@ resource "google_firestore_database" "default" {
   type        = "FIRESTORE_NATIVE"
 }
 
+
+resource "google_cloud_run_service" "default" {
+  name     = "simple-crud-app"
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/${var.project_id}/simple-crud-app"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+
+output "service_url" {
+  value = google_cloud_run_service.default.status[0].url
+}

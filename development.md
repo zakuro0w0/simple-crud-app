@@ -168,3 +168,70 @@ from domain import Task
 gcloud builds submit --tag gcr.io/{project-id}/{tag-name}
 ```
 
+## CloudRunへのデプロイをTerraformで自動化する
+- `main.tf`に以下のCloudRunリソース定義を追加する
+- template/spec/containers/imageでGCRのコンテナイメージを指定する
+
+### main.tf
+
+```tf
+resource "google_cloud_run_service" "default" {
+  name     = "simple-crud-app"
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/${var.project_id}/simple-crud-app"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+```
+
+- 上のtfファイルを使って`terraform plan && terraform apply`
+- CloudRun上にサービスとしてデプロイされていることがわかる
+
+![alt text](./images/cloud-run-deployed.png)
+
+## CloudRunにデプロイしたFastAPIサーバにリクエストを送信する
+- デフォルトではCloudRunへのアクセスには認証が必要となる
+
+### Authorization headerでの認証
+- postmanやcurlでリクエストする場合、headerに以下の設定が必要となる
+- `Authorization`キーに対する値として`Bearer `に続けて`gcloud auth print-identity-token`で取得したトークン文字列を設定する
+- print-identity-tokenは現在gcloud CLIでアクティブになっている(=認証されている)アカウントのOIDCトークンを出力する
+- どのアカウントがアクティブになっているかは`gcloud auth list`で確認できる
+- アカウントの認証は`gcloud auth login`で行う
+- このOIDCトークンは一定時間で期限切れとなる
+
+### CloudRunサービスURLの扱い
+- CloudRunのサービスURLの書式は`https://{SERVICE_IDENTIFIER}.run.app`になっている
+- これに続けて`/{endpoint}`を記述することでwebAPIへのリクエストURLになる
+- Dockerfileでポート番号を指定しているが、CloudRunは内部でリバースプロキシを利用して転送してくれているため、サービスURLに続けてポート番号を指定する必要は無い
+
+### FastAPIルーティングで設定したエンドポイントの扱い
+- 現在FastAPIのルーティングはroutes.pyに分離したものをmain.pyでimportしている
+- この場合、ToDoタスクを新規作成するためのエンドポイントにリクエストを送る場合、`tasks`ではく`tasks/`にする必要がある点に注意
+- postmanやcurlでリクエストする際のURLは`https://{SERVICE_IDENTIFIER}.run.app/tasks/`となる
+
+#### routs.py
+```py
+router = APIRouter()
+@router.post("/")
+async def create_task(task: TaskCreateIn):
+```
+
+#### main.py
+```py
+app = FastAPI()
+app.include_router(tasks_router, prefix="/tasks")
+```
+
+![alt text](./images/cloud-run-request.png)
+
