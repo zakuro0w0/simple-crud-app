@@ -159,3 +159,12 @@ sys.path.append(str(Path(__file__).parent))
 ```py
 from domain import Task
 ```
+
+## FastAPIサーバプログラムをDockerコンテナイメージ化してGCPにpushする
+- devcontainerとは別にデプロイ用の[Dockerfile](./Dockerfile)を用意
+- その上で以下のコマンドを実行してDockerコンテナイメージをGCPにpushする
+
+```sh
+gcloud builds submit --tag gcr.io/{project-id}/{tag-name}
+```
+
