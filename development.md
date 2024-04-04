@@ -235,3 +235,35 @@ app.include_router(tasks_router, prefix="/tasks")
 
 ![alt text](./images/cloud-run-request.png)
 
+## Terraformのstate管理について
+- Terraformはインフラの状態を`terraform.tfstate`ファイルで管理している
+- 通常tfstateファイルはローカルに生成されるが、チーム開発ではリモートバックエンド(AWS S3やGoogleCloudStorage)でtfstateファイルを管理することが推奨されている
+- リモートバックエンドでtfstateを管理することで以下の恩恵を受けられる
+  - stateファイルのバージョニング
+  - stateの排他制御
+- 以下のようにtfファイルで`backend`ブロックを用意することでリモートバックエンドを設定できる
+
+### main.tf
+```
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.21"
+    }
+  }
+
+  # terraformのstateファイルをGCSに保存する
+  backend "gcs" {
+    # バケットは予め作っておく
+    bucket = "simple-crud-app-tfstate"
+    prefix = "terraform/state"
+    # backendブロックではvariableは使えないのでベタ書きする
+    credentials = ".devcontainer/gcp-service-account-key.json"
+  }
+}
+```
+
+![alt text](./images/terraform-state.png)
+
+
