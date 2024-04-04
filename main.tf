@@ -5,6 +5,15 @@ terraform {
       version = "~> 5.21"
     }
   }
+
+  # terraformのstateファイルをGCSに保存する
+  backend "gcs" {
+    # バケットは予め作っておく
+    bucket = "simple-crud-app-tfstate"
+    prefix = "terraform/state"
+    # backendブロックではvariableは使えないのでベタ書きする
+    credentials = ".devcontainer/gcp-service-account-key.json"
+  }
 }
 
 provider "google" {
