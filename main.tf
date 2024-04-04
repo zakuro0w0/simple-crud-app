@@ -12,17 +12,16 @@ terraform {
     bucket = "simple-crud-app-tfstate"
     prefix = "terraform/state"
     # backendブロックではvariableは使えないのでベタ書きする
-    credentials = ".devcontainer/gcp-service-account-key.json"
+    credentials = "gcp-service-account-key.json"
   }
 }
 
 provider "google" {
-  credentials = file("${var.GOOGLE_APPLICATION_CREDENTIALS}")
+  credentials = file("gcp-service-account-key.json")
   project     = var.project_id
   region      = var.region
 }
 
-variable "GOOGLE_APPLICATION_CREDENTIALS" {}
 variable "project_id" {}
 variable "region" {
   default = "us-central1"
@@ -41,7 +40,7 @@ resource "google_firestore_database" "default" {
   name        = "(default)"
   provider    = google
   project     = var.project_id
-  location_id = "asia-northeast1"
+  location_id = var.region
   type        = "FIRESTORE_NATIVE"
 }
 

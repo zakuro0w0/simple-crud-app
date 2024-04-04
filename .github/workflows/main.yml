@@ -21,7 +21,7 @@ jobs:
       with:
         registry: gcr.io
         username: _json_key
-        password: ${{ secrets.GCR_JSON_KEY }}
+        password: ${{ secrets.GCP_SA_KEY }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -40,6 +40,19 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+
+    - name : Setup Google Cloud credentials
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      run: |
+        echo "$GCP_SA_KEY" > ./gcp-service-account-key.json
+
+    - name: Create terraform.tfvars
+      run: |
+        cat << EOF > terraform.tfvars
+        project_id = "${{ secrets.GCP_PROJECT_ID }}"
+        region = "${{ secrets.GCP_REGION }}"
+        EOF
 
     - name: Terraform Init
       run: terraform init
