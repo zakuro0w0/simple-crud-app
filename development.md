@@ -266,4 +266,81 @@ terraform {
 
 ![alt text](./images/terraform-state.png)
 
+## GitHub Actionsでビルド&デプロイする
+### docker imageのbuild + Google Container Registryへのpush
+- GitHub secretsに以下を登録しておく必要がある
+  - `GCP_SA_KEY`: GCPのサービスアカウント鍵ファイルのjsonデータ
+  - `GCP_PROJECT_ID`: GCPのプロジェクトID
+- `docker/build-push-action@v5`で作るdocker imageのtagについて
+  - git commitのSHAをtag名とするのが一般的なのでそれに倣う
+  - また、最後に作ったimageには`latest`タグも付けておく
+  - `latest`タグを付けると、以前に同じタグを付けたimageからは`latest`タグが外れる
+- copilotで提示されたアクション(`actions/checkout@v4`)のバージョンには注意
+  - 古い場合があるので必ずアクション毎にgithubリポジトリを確認して最新バージョンを使うこと
 
+```yml
+runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Google Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: gcr.io
+        username: _json_key
+        password: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/simple-crud-app:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/simple-crud-app:latest
+```
+
+### TerraformでGCPにデプロイする
+- CI/CD環境にはローカルで使っていた以下が存在しないので別途再現する必要がある
+  - `terraform.tfvars`ファイル: main.tfのvariablesで参照する
+  - `gcp-service-account-key.json`ファイル: main.tfのbackendやproviderブロックで参照する
+- いずれもGitHub secretsに登録しておき、そこからローカル限定のファイルとして再構築する
+
+```yml
+  terraform:
+    needs: build-and-push-container-image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name : Setup Google Cloud credentials
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      run: |
+        echo "$GCP_SA_KEY" > ./gcp-service-account-key.json
+
+    - name: Create terraform.tfvars
+      run: |
+        cat << EOF > terraform.tfvars
+        project_id = "${{ secrets.GCP_PROJECT_ID }}"
+        region = "${{ secrets.GCP_REGION }}"
+        EOF
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+```
