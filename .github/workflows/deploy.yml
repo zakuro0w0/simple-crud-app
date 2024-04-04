@@ -28,7 +28,9 @@ jobs:
       with:
         context: .
         push: true
-        tags: gcr.io/${{ secrets.GCP_PROJECT_ID }}/simple-crud-app:${{ github.sha }}
+        tags: |
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/simple-crud-app:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/simple-crud-app:latest
 
   terraform:
     needs: build-and-push-container-image
