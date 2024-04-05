@@ -7,7 +7,7 @@ router = APIRouter()
 controller = TaskController()
 
 
-@router.post("/")
+@router.post("")
 async def create_task(task: TaskCreateIn):
     # TaskCreateInをTaskに変換してから渡す
     created_task = controller.create_task(
