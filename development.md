@@ -217,7 +217,9 @@ resource "google_cloud_run_service" "default" {
 
 ### FastAPIルーティングで設定したエンドポイントの扱い
 - 現在FastAPIのルーティングはroutes.pyに分離したものをmain.pyでimportしている
-- この場合、ToDoタスクを新規作成するためのエンドポイントにリクエストを送る場合、`tasks`ではく`tasks/`にする必要がある点に注意
+- `@router.post()`に`"/"`を与えているため、ToDoタスクを新規作成するためのエンドポイントにリクエストを送る場合は`tasks`ではく`tasks/`にする必要がある点に注意
+  - `@router.post("")`とすることで`tasks`でリクエストできるようになる
+  - `tasks/`でリクエストした場合は`tasks`にリダイレクトしてくれる
 - postmanやcurlでリクエストする際のURLは`https://{SERVICE_IDENTIFIER}.run.app/tasks/`となる
 
 #### routs.py
